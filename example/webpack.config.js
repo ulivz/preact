@@ -56,22 +56,23 @@ module.exports = {
 				test: /.jsx?$/,
 				exclude: /node_modules/,
 				use: {
-					loader: 'babel-loader',
-					options: {
-						// presets: ["@babel/react"],
-						plugins: [
-							[
-								'@babel/transform-react-jsx',
-								{
-									// @see https://babeljs.io/docs/babel-plugin-transform-react-jsx#react-automatic-runtime-1
-									runtime: 'automatic',
-									importSource: 'preact'
-								}
-							]
-						]
-					}
-				}
-			}
+				  loader: "swc-loader",
+				  options: {
+					jsc: {
+					  parser: {
+						syntax: "ecmascript",
+						jsx: true,
+					  },
+					  transform: {
+						react: {
+						  runtime: "automatic",
+						  importSource: "preact",
+						},
+					  },
+					},
+				  },
+				},
+			  },
 		]
 	},
 
