@@ -52,30 +52,32 @@ module.exports = {
 				type: 'asset'
 			},
 
-			
+
 			{
 				test: /.jsx?$/,
 				exclude: /node_modules/,
 				use: [
-				  {
-					loader: "babel-loader",
-					options: {
-					  // presets: ["@babel/react"],
-					  plugins: [
-						[
-						  "@babel/transform-react-jsx",
-						  {
-							// @see https://babeljs.io/docs/babel-plugin-transform-react-jsx#react-automatic-runtime-1
-							runtime: "automatic",
-							importSource: "preact",
-						  },
-						],
-					  ],
+					{
+						loader: require.resolve('./inspect-babel-loader')
 					},
-				  },
+					{
+						loader: "babel-loader",
+						options: {
+							plugins: [
+								[
+									"@babel/transform-react-jsx",
+									{
+										// @see https://babeljs.io/docs/babel-plugin-transform-react-jsx#react-automatic-runtime-1
+										runtime: "automatic",
+										importSource: "preact",
+									},
+								],
+							],
+						},
+					},
 				],
-			  },
-		
+			},
+
 		]
 	},
 
