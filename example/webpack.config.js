@@ -22,6 +22,14 @@ module.exports = {
 	devServer: {
 		static: './dist'
 	},
+	resolve: {
+		alias: {
+			'preact/devtools': path.resolve(__dirname, '../devtools/src/index.js'),
+			'preact/debug': path.resolve(__dirname, '../debug/src/index.js'),
+			'preact/jsx-dev-runtime': path.resolve(__dirname, '../jsx-runtime/src/index.js'),
+			'preact': path.resolve(__dirname, '../src/index.js'),
+		}
+	},
 
 	plugins: [
 		new HtmlWebpackPlugin({
@@ -54,7 +62,7 @@ module.exports = {
 
 			{
 				test: /.jsx?$/,
-				exclude: /node_modules/,
+				// exclude: /node_modules/,
 				use: {
 				  loader: "swc-loader",
 				  options: {
