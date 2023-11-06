@@ -490,19 +490,6 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
       return array;
     }
 
-    function buildChildrenProperty(children: Expression[]) {
-      let childrenNode;
-      if (children.length === 1) {
-        childrenNode = children[0];
-      } else if (children.length > 1) {
-        childrenNode = t.arrayExpression(children);
-      } else {
-        return undefined;
-      }
-
-      return t.objectProperty(t.identifier("children"), childrenNode);
-    }
-
     // Builds JSX into:
     // Production: React.jsx(type, arguments, key)
     // Development: React.jsxDEV(type, arguments, key, isStaticChildren, source, self)
@@ -551,8 +538,6 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
       if (attribsArray.length || children.length) {
         attribs = buildJSXOpeningElementAttributes(
           attribsArray,
-          // which will be thrown later
-          children,
         );
       } else {
         // attributes should never be null
@@ -560,6 +545,10 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
       }
 
       args.push(attribs);
+
+      if (children?.length > 0) {
+        children.forEach(child => args.push(child));
+      }
 
       if (development) {
         // isStaticChildren, __source, and __self are only used in development
@@ -582,20 +571,11 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
       return call(file, children.length > 1 ? "jsxs" : "jsx", args);
     }
 
-    // Builds props for React.jsx. This function adds children into the props
-    // and ensures that props is always an object
+    // Builds props for React.jsx.
     function buildJSXOpeningElementAttributes(
       attribs: NodePath<JSXAttribute | JSXSpreadAttribute>[],
-      children: Expression[],
     ) {
       const props = attribs.reduce(accumulateAttribute, []);
-
-      // In React.jsx, children is no longer a separate argument, but passed in
-      // through the argument object
-      if (children?.length > 0) {
-        props.push(buildChildrenProperty(children));
-      }
-
       return t.objectExpression(props);
     }
 
@@ -609,19 +589,10 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
       const args = [get(file, "id/fragment")()];
 
       const children = t.react.buildChildren(path.node);
-
-      args.push(
-        t.objectExpression(
-          children.length > 0
-            ? [
-                buildChildrenProperty(
-                  // which will be thrown later
-                  children,
-                ),
-              ]
-            : [],
-        ),
-      );
+      args.push(t.objectExpression([]));
+      if (children?.length > 0) {
+        children.forEach(child => args.push(child));
+      }
 
       if (development) {
         args.push(

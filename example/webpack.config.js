@@ -65,7 +65,7 @@ module.exports = {
 						options: {
 							plugins: [
 								[
-									"@babel/transform-react-jsx",
+									require.resolve('../babel-plugin-transform-react-jsx'),
 									{
 										// @see https://babeljs.io/docs/babel-plugin-transform-react-jsx#react-automatic-runtime-1
 										runtime: "automatic",

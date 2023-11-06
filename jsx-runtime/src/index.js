@@ -74,9 +74,13 @@ function createVNode(type, props, key, isStaticChildren, __source, __self) {
 	return vnode;
 }
 
+export function jsx(type, props, ...children) {
+	props.children = children;
+	return createVNode(type, props);
+}
+
 export {
-	createVNode as jsx,
-	createVNode as jsxs,
-	createVNode as jsxDEV,
+	jsx as jsxs,
+	jsx as jsxDEV,
 	Fragment
 };
