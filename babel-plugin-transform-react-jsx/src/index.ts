@@ -7,4 +7,4 @@ export default createPlugin({
   development: false,
 });
 
-export type { Options } from "./create-plugin.ts";
+export type { Options } from "./create-plugin";

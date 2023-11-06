@@ -397,7 +397,6 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
         if (node.name === "this" && t.isReferenced(node, parent)) {
           return t.thisExpression();
         } else if (t.isValidIdentifier(node.name, false)) {
-          // @ts-expect-error cast AST type to Identifier
           node.type = "Identifier";
           return node as unknown as t.Identifier;
         } else {
@@ -468,24 +467,20 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
       }
 
       if (t.isJSXNamespacedName(attribute.node.name)) {
-        // @ts-expect-error mutating AST
         attribute.node.name = t.stringLiteral(
           attribute.node.name.namespace.name +
             ":" +
             attribute.node.name.name.name,
         );
       } else if (t.isValidIdentifier(attribute.node.name.name, false)) {
-        // @ts-expect-error mutating AST
         attribute.node.name.type = "Identifier";
       } else {
-        // @ts-expect-error mutating AST
         attribute.node.name = t.stringLiteral(attribute.node.name.name);
       }
 
       array.push(
         t.inherits(
           t.objectProperty(
-            // @ts-expect-error The attribute.node.name is an Identifier now
             attribute.node.name,
             value,
           ),
@@ -556,7 +551,6 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
       if (attribsArray.length || children.length) {
         attribs = buildJSXOpeningElementAttributes(
           attribsArray,
-          //@ts-expect-error The children here contains JSXSpreadChild,
           // which will be thrown later
           children,
         );
@@ -621,7 +615,6 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
           children.length > 0
             ? [
                 buildChildrenProperty(
-                  //@ts-expect-error The children here contains JSXSpreadChild,
                   // which will be thrown later
                   children,
                 ),
@@ -671,7 +664,6 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
           path,
           openingPath.get("attributes"),
         ),
-        // @ts-expect-error JSXSpreadChild has been transformed in convertAttributeValue
         ...t.react.buildChildren(path.node),
       ]);
     }
@@ -787,10 +779,12 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
 
       return props.length === 1 &&
         t.isSpreadElement(props[0]) &&
+        // @ts-expect-error
         // If an object expression is spread element's argument
         // it is very likely to contain __proto__ and we should stop
         // optimizing spread element
         !t.isObjectExpression(props[0].argument)
+        // @ts-expect-error
         ? props[0].argument
         : props.length > 0
         ? t.objectExpression(props)
@@ -853,7 +847,6 @@ function toMemberExpression(id: string): Identifier | MemberExpression {
     id
       .split(".")
       .map(name => t.identifier(name))
-      // @ts-expect-error - The Array#reduce does not have a signature
       // where the type of initial value differs from callback return type
       .reduce((object, property) => t.memberExpression(object, property))
   );
@@ -866,7 +859,6 @@ function makeSource(path: NodePath, state: PluginPass) {
     return path.scope.buildUndefinedNode();
   }
 
-  // @ts-expect-error todo: avoid mutating PluginPass
   if (!state.fileNameIdentifier) {
     const { filename = "" } = state;
 
@@ -875,13 +867,11 @@ function makeSource(path: NodePath, state: PluginPass) {
       id: fileNameIdentifier,
       init: t.stringLiteral(filename),
     });
-    // @ts-expect-error todo: avoid mutating PluginPass
     state.fileNameIdentifier = fileNameIdentifier;
   }
 
   return makeTrace(
     t.cloneNode(
-      // @ts-expect-error todo: avoid mutating PluginPass
       state.fileNameIdentifier,
     ),
     location.start.line,
