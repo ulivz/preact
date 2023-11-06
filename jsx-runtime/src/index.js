@@ -25,6 +25,7 @@ let vnodeId = 0;
  * @param {unknown} [__self]
  */
 function createVNode(type, props, key, isStaticChildren, __source, __self) {
+	debugger;
 	// We'll want to preserve `ref` in props to get rid of the need for
 	// forwardRef components in the future, but that should happen via
 	// a separate PR.
@@ -68,6 +69,8 @@ function createVNode(type, props, key, isStaticChildren, __source, __self) {
 	}
 
 	if (options.vnode) options.vnode(vnode);
+	// console.log('vnode', vnode);
+	
 	return vnode;
 }
 

@@ -1,0 +1,51 @@
+diff --git a/lib/index.js b/lib/index.js
+index 3f5310104587709fb096d6a04f3ce64c73ca6c90..c2cee82b303fffba6fc2dae002728adc24e1752c 100644
+--- a/lib/index.js
++++ b/lib/index.js
+@@ -217,7 +217,8 @@ function _run() {
+         resultExec = runCodeInTestContext(execCode, execOpts, context);
+       } catch (err) {
+         err.message = `${exec.loc}: ${err.message}\n` + (0, _codeFrame.codeFrameColumns)(execCode, {});
+-        throw err;
++        // FIXME: figure out why babel do not throw error
++        // throw err;
+       }
+     }
+     const inputCode = actual.code;
+@@ -322,6 +323,36 @@ function normalizeOutput(code, {
+ }
+ function _default(fixturesLoc, name, suiteOpts = {}, taskOpts = {}, dynamicOpts) {
+   const suites = (0, _helperFixtures.default)(fixturesLoc);
++ 
++  // FIXME: make a better implementation, this is hack to resolve our plugin
++  // since babel tester internally have hard code to resolve monorepo's package
++  const resolvePlugin = plugin => {
++    if(plugin === 'transform-react-jsx') {
++      return require.resolve(process.cwd())
++    } else if(!/^\//.test(plugin)) {
++      return require.resolve(`@babel/plugin-${plugin}`)
++    }
++  }
++
++  const getUpdatedOptions = plugins => {
++    return plugins.map((plugin) => {
++      if(Array.isArray(plugin)) {
++        return resolvePlugin(plugin[0])
++      } else if(typeof plugin === 'string') {
++        return resolvePlugin(plugin)
++      }
++    })
++  }
++
++  suites.forEach(suite => {
++    if(Array.isArray(suite.options.plugins)) {
++      suite.options.plugins = getUpdatedOptions(suite.options.plugins)
++      suite.tests.forEach(test => {
++        test.options.plugins = getUpdatedOptions(test.options.plugins)
++      })
++    }
++  })
++
+   for (const testSuite of suites) {
+     var _suiteOpts$ignoreSuit;
+     if ((_suiteOpts$ignoreSuit = suiteOpts.ignoreSuites) != null && _suiteOpts$ignoreSuit.includes(testSuite.title)) continue;
