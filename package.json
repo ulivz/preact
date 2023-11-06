@@ -261,6 +261,7 @@
     "@actions/github": "^5.0.0",
     "@actions/glob": "^0.2.0",
     "@babel/core": "^7.7.0",
+    "@babel/helper-transform-fixture-test-runner": "^7.22.19",
     "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
     "@babel/plugin-transform-react-jsx": "^7.7.0",
     "@babel/plugin-transform-react-jsx-source": "^7.7.4",
